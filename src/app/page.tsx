@@ -1,17 +1,36 @@
 "use client"
 import Image from "next/image";
 import Navbar from "@/components/navbar";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter,usePathname } from "next/navigation";
+
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const [news, setNews] = useState([])
 
   const router = useRouter()
+  const pathName = usePathname()
+
+  useEffect(() => {
+  const data = localStorage.getItem("CachedNews")
+  if(!data){
+  }
+  setNews(JSON.parse(data));
+    
+  }, [pathName])
+
+  useEffect(() => {
+   localStorage.clear()
+  
+    
+  }, [])
+  
+  
 
   const handleClick = async () => {
     setNews([]);
+    localStorage.clear();
     const res = await fetch('/api/newsApi', {
       method: 'POST',
       headers: {
@@ -24,6 +43,7 @@ export default function Home() {
 
     const data = await res.json();
     console.log("Data request sent: ", query)
+    localStorage.setItem("CachedNews", JSON.stringify(data));
     setNews(data)
   }
 
